@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import fire from '../config/Fire';
-import Posts from './Posts'
+import Posts from './Posts';
+import axios from 'axios';
 
 class Home extends Component {
     constructor(props) {
@@ -13,6 +14,36 @@ class Home extends Component {
         fire.auth().signOut();
     }
 
+    state = {
+        posts: []
+    }
+
+    componentDidMount() {
+        this.obtenerPosts();
+    }
+
+    obtenerPosts = () => {
+        axios.get(`https://happy-dog-3240a.firebaseio.com/`)
+        .then(res => {
+
+        });
+    };
+
+    crearPost = (post) =>{
+        axios.post(`https://happy-dog-3240a.firebaseio.com/`, {post})
+        .then(res => {
+            if(res.status === 201) {
+                let postId = {id: res.data.id}
+                const nuevoPost = Object.assign({}, res.data.post, postId)
+                this.setState(prevState => ({
+                    posts: [...prevState.posts, nuevoPost]
+                }))
+            }
+        
+        })
+        
+    }
+
     render() {
             return (
                 < div >
@@ -20,7 +51,9 @@ class Home extends Component {
                     </h1>
                     <button onClick={ this.logout } > Cerrar Sesión 
                     </button>
-                    <Posts />
+                    <Posts 
+                        crearPost={this.crearPost}
+                    />
                 </div>);
 
     }
